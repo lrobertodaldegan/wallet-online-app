@@ -22,6 +22,12 @@ export const AuthProvider = ({ children }) => {
     return storedToken;
   };
 
+  const getToken = async () => {
+    const storedToken = await AsyncStorage.getItem('token');
+
+    return storedToken;
+  };
+
   const signIn = async (newToken, action=()=>null) => {
     await AsyncStorage.setItem('token', newToken);
     setToken(newToken);
@@ -31,13 +37,14 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async (action=()=>null) => {
     await AsyncStorage.removeItem('token');
+    
     setToken(null);
 
     action();
   };
 
   return (
-    <AuthContext.Provider value={{ token, signIn, signOut }}>
+    <AuthContext.Provider value={{ token, signIn, signOut, loadToken, getToken }}>
       {children}
     </AuthContext.Provider>
   );

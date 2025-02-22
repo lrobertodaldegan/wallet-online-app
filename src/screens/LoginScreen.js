@@ -17,7 +17,13 @@ const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
-  const { signIn } = useContext(AuthContext);
+  const { token, signIn } = useContext(AuthContext);
+
+  useEffect(() => {
+    if(token && token !== null){
+      navigation.navigate('Home');
+    }
+  }, []);
 
   const handleLogin = async () => {
     try {
@@ -140,7 +146,7 @@ const styles = StyleSheet.create({
     marginTop:5,
     backgroundColor:'transparent',
     alignItems:'center',
-    justifyContent:'center'
+    justifyContent:'center',
   },
   passBtnLbl:{
     color:'#000',

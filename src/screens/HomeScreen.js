@@ -19,7 +19,6 @@ const YearsB = Array.from(new Array(2), (_, index) => ((new Date().getFullYear()
 const YearsF = Array.from(new Array(3), (_, index) => ((new Date().getFullYear() + (index)).toString()));
 const Years = [...YearsB, ...YearsF].sort();
 
-
 const HomeScreen = ({navigation}) => {
   const { token, signOut } = useContext(AuthContext);
   const [month, setMonth] = useState('');
@@ -42,8 +41,6 @@ const HomeScreen = ({navigation}) => {
 
       const url = `${BaseURL}/item?month=${month}&year=${year}&dt=${(new Date().getMilliseconds())}`;
 
-      console.log(url);
-
       try {
         const response = await fetch(url, {
           method:'GET',
@@ -53,8 +50,6 @@ const HomeScreen = ({navigation}) => {
         });
 
         const data = await response.json();
-    
-        console.log(data);
 
         if (response.ok) {
           setItems(data);
@@ -84,7 +79,7 @@ const HomeScreen = ({navigation}) => {
       ) : (
         <FlatList
           ListHeaderComponent={
-            <HomeHeader />
+            <HomeHeader itens={items}/>
           } 
           refreshControl={
             <RefreshControl
