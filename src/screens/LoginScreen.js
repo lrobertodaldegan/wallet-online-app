@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { 
   View, 
-  TextInput, 
+  ActivityIndicator, 
   TouchableHighlight, 
   Alert, 
   StyleSheet,
@@ -12,18 +12,19 @@ import {
 } from 'react-native';
 import { AuthContext, BaseURL } from '../components/AuthContext';
 import { Label } from '../components/Label';
+import Input from '../components/Input';
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
-  const { token, signIn } = useContext(AuthContext);
+  const { token, signIn, isLoading } = useContext(AuthContext);
 
   useEffect(() => {
-    if(token && token !== null){
+    if (token) {
       navigation.navigate('Home');
     }
-  }, []);
+  }, [token, navigation]);
 
   const handleLogin = async () => {
     try {
@@ -47,6 +48,14 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <View style={styles.loadConteiner}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
+
   return (
     <KeyboardAvoidingView style={styles.container}
         behavior='padding'>
@@ -57,20 +66,18 @@ const LoginScreen = ({ navigation }) => {
       <Label value={'Bem-vindo!'}
               style={styles.wellcome}/>
 
-      <TextInput
+      <Input
         placeholder="Usuário"
-        style={styles.input}
-        value={username}
-        onChangeText={setUsername}
+        val={username}
+        onChangeVal={setUsername}
         placeholderTextColor={'#888'}
       />
-      <TextInput
+      <Input
         placeholder="Senha"
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
+        val={password}
+        onChangeVal={setPassword}
         placeholderTextColor={'#888'}
-        secureTextEntry={!showPass}
+        secure={!showPass}
       />
 
       {
@@ -111,6 +118,11 @@ const LoginScreen = ({ navigation }) => {
 const window = Dimensions.get('window');
 
 const styles = StyleSheet.create({
+  loadConteiner:{
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+  },
   container:{
     height:window.height,
     width:window.width,
@@ -128,16 +140,6 @@ const styles = StyleSheet.create({
     color:'#000',
     fontSize:20,
     marginBottom:window.width * 0.25,
-  },
-  input: {
-    width:window.width - 40,
-    height:50,
-    marginLeft:20,
-    backgroundColor:'#fff',
-    fontFamily: 'Montserrat-Regular',
-    borderRadius:10,
-    marginTop:5,
-    paddingHorizontal:10,
   },
   passBtn:{
     width:window.width - 40,

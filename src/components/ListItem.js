@@ -6,40 +6,11 @@ import {
     Dimensions,
     TouchableHighlight,
 } from 'react-native';
-import { AuthContext, BaseURL } from '../components/AuthContext';
 import { Label } from './Label';
+import ToggleInput from './ToggleInput';
 
-export const ListItem = ({ item, onCheck=()=>null, onDel=()=>null }) => {
-  const { token } = useContext(AuthContext);
+export const ListItem = ({ item, onCheck=(item)=>null, onDel=(item)=>null }) => {
   const [expand, setExpand] = useState(false);
-
-  const handleMarkItem = (item) => {
-    let body = {
-      id:item._id,
-      month:month,
-      year:year
-    };
-
-    let url = `${BaseURL}${item.paid === true ? `/item/unpay` : `/item/pay`}`;
-
-    api.put(url, body, {
-      headers: {
-        'Authorization': `${token}`,
-      }
-    }).catch(error => console.error('Erro ao marcar ou desmarcar item:', error));
-
-    onCheck();
-  };
-
-  const handleDelItem = (item) => {
-    api.delete(`${BaseURL}/item?id=${item._id}&month=${month}&year=${year}`, {
-      headers: {
-        'Authorization': `${token}`,
-      }
-    }).catch(error => console.error('Erro ao deletar item:', error));
-
-    onDel();
-  };
 
   const formatValues = (val) => {
     const f = new Intl.NumberFormat('pt-BR', {
@@ -58,9 +29,20 @@ export const ListItem = ({ item, onCheck=()=>null, onDel=()=>null }) => {
 
   return (
     <View style={[styles.container, {borderRightColor:borderColor}]}>
-      <View style={{height:expand === true ? 220 : 60}}>
-        <Label style={styles.title} value={item.desc}/>
-        <Label style={styles.val} value={formatValues(item.val)}/>
+      <View style={{height:expand === true ? 270 : 60}}>
+        <View style={styles.header}>
+          <View style={styles.headerDetails}>
+            <Label style={styles.title} value={item.desc}/>
+            <Label style={styles.val} value={formatValues(item.val)}/>
+          </View>
+
+          {item.type && item.type.includes('debit') && (
+            <ToggleInput 
+              initialEnabled={item.paid === true}
+              onChange={() => onCheck(item)}
+            />
+          )}
+        </View>
 
         {expand === true ? (
           <>
@@ -69,7 +51,15 @@ export const ListItem = ({ item, onCheck=()=>null, onDel=()=>null }) => {
             <Label style={styles.desc} value={item.month}/>
             <Label style={styles.desc} value={item.year}/>
             <Label style={styles.desc} value={item.rec}/>
-            <Label style={styles.desc} value={item.paid}/>
+
+            <TouchableHighlight 
+                style={styles.delBtn}
+                underlayColor={'transparent'}
+                onPress={() => onDel(item)}>
+
+                <Label value={'Excluir'} style={styles.delBtnLbl}/>
+
+            </TouchableHighlight>
           </>
         ) : <></>}
       </View>
@@ -99,6 +89,13 @@ const styles = StyleSheet.create({
     borderBottomWidth:1,
     borderBottomColor:'#fafafa',
   },
+  header:{
+    flex:1,
+    flexDirection:'row',
+  },
+  headerDetails:{
+    width:window.width * 0.7
+  },
   title:{
     fontSize:18,
     marginBottom:5
@@ -116,6 +113,15 @@ const styles = StyleSheet.create({
   expandBtnLbl:{
     textAlign:'center',
     color:'#888',
+  },
+  delBtn:{
+    width:window-20,
+    backgroundColor:'#fff',
+    marginVertical:20
+  },
+  delBtnLbl:{
+    textAlign:'center',
+    color:'#d50000',
   },
 
 });

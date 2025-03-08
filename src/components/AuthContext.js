@@ -7,25 +7,24 @@ export const BaseURL = 'https://lucasrobertodev.com.br/api/wallet';
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     loadToken();
   }, []);
 
   const loadToken = async () => {
-    const storedToken = await AsyncStorage.getItem('token');
-    
-    if (storedToken) {
-      setToken(storedToken);
+    try{
+      const storedToken = await AsyncStorage.getItem('token');
+      
+      if (storedToken && storedToken !== null)
+        setToken(storedToken);
+
+    } catch(error) {
+      console.error('Erro ao verificar token em cache:', error);
+    } finally {
+      setIsLoading(false);
     }
-
-    return storedToken;
-  };
-
-  const getToken = async () => {
-    const storedToken = await AsyncStorage.getItem('token');
-
-    return storedToken;
   };
 
   const signIn = async (newToken, action=()=>null) => {
@@ -44,7 +43,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, signIn, signOut, loadToken, getToken }}>
+    <AuthContext.Provider value={{ token, signIn, signOut, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

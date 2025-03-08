@@ -6,7 +6,9 @@ import {
 
 export const Label = ({ value='', style={} }) => {
   return (
-    <Text style={{...styles.l, ...style}}>{value}</Text>
+    <Text style={{...styles.l, ...style}} allowFontScaling={false}>
+      {value}
+    </Text>
   );
 };
 
